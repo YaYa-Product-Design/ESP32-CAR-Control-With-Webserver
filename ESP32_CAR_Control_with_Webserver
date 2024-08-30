@@ -18,7 +18,7 @@
 #define ENB_B 27  // Motor D Enable Pin (PWM)
 
 const char* ssid = "iPhone";
-const char* password = "doyourbest.";
+const char* password = "password";
 
 WebServer server(80);
 
