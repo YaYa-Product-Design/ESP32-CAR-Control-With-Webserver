@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="login-container">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-button">Login</button>
+        </div>
+<!-- Value Submission Form (visible after login) -->
+<div id="value-container" style="display:none;">
+    <input type="text" id="value1" placeholder="Value 1">
+    <input type="text" id="value2" placeholder="Value 2">
+    <input type="text" id="value3" placeholder="Value 3">
+    <button id="submit-button">Submit Values</button>
+    <ul id="values-list"></ul>
+    <button id="logout-button">Logout</button>
+</div>
+
+    </div>
+    <script src="functions.js" type="module"></script>
+    <script src="index.js" type="module"></script>
+</body>
+</html>
