@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Control</title>
+    <style>
+        body {
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            height: 100vh;
+        }
+        .sidebar button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .draggable-list {
+            list-style: none;
+            padding: 0;
+        }
+        .draggable-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #ddd;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+        }
+        .draggable-item button {
+            margin-left: 10px;
+        }
+        #car-container {
+            margin-top: 20px;
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        #car {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background-color: blue;
+            transition: all 1s ease;
+        }
+        #runBtn, #updateBtn {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button onclick="sendCommand('forward')">Forward</button>
+        <button onclick="sendCommand('reverse')">Reverse</button>
+        <button onclick="sendCommand('forward right')">Forward Right</button>
+        <button onclick="sendCommand('forward left')">Forward Left</button>
+        <button onclick="sendCommand('back left')">Back Left</button>
+        <button onclick="sendCommand('back right')">Back Right</button>
+        <button onclick="sendCommand('light on')">Light On</button>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h2>Commands</h2>
+        <ul id="commandList" class="draggable-list"></ul>
+        <button id="updateBtn">Update Order</button>
+        <button id="runBtn">Run Animation</button>
+
+        <!-- Car Container -->
+        <div id="car-container">
+            <div id="car"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, remove, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAH3oxt960RFnksHU6gUN7cMA_yV-60dwU",
+            authDomain: "simulationcar-e7058.firebaseapp.com",
+            databaseURL: "https://simulationcar-e7058-default-rtdb.firebaseio.com",
+            projectId: "simulationcar-e7058",
+            storageBucket: "simulationcar-e7058.appspot.com",
+            messagingSenderId: "691451633113",
+            appId: "1:691451633113:web:1facaeef86ead14cc68dc8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let carPosition = { top: 200, left: 200 };
+        const stepSize = 50;
+        const containerSize = 400;
+        const carSize = 50;
+
+        window.sendCommand = function (command) {
+            const newCommandRef = push(ref(db, 'commands'));
+            set(newCommandRef, {
+                command: command,
+                timestamp: Date.now(),
+                order: 0
+            }).then(() => {
+                fetchCommands();
+            }).catch(error => {
+                console.error('Error sending command:', error);
+            });
+        }
+
+        function fetchCommands() {
+            const commandList = document.getElementById('commandList');
+            const commandQuery = query(ref(db, 'commands'), orderByChild('order'));
+            onValue(commandQuery, (snapshot) => {
+                const data = snapshot.val();
+                commandList.innerHTML = '';
+                const commandsArray = [];
+                for (const key in data) {
+                    commandsArray.push({
+                        id: key,
+                        command: data[key].command,
+                        order: data[key].order
+                    });
+                }
+                commandsArray.sort((a, b) => a.order - b.order);
+                commandsArray.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'draggable-item';
+                    listItem.draggable = true;
+                    listItem.dataset.id = item.id;
+                    listItem.innerHTML = `${item.command} <button onclick="deleteCommand('${item.id}')">Delete</button>`;
+                    commandList.appendChild(listItem);
+                });
+                makeDraggable();
+            });
+        }
+
+        function makeDraggable() {
+            const items = document.querySelectorAll('.draggable-item');
+            items.forEach(item => {
+                item.addEventListener('dragstart', dragStart);
+                item.addEventListener('dragover', dragOver);
+                item.addEventListener('drop', drop);
+            });
+        }
+
+        let draggedItem = null;
+
+        function dragStart(event) {
+            draggedItem = event.target;
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            if (event.target.className.includes('draggable-item')) {
+                event.target.parentNode.insertBefore(draggedItem, event.target.nextSibling);
+            }
+        }
+
+        window.updateOrder = function () {
+            const commandList = document.getElementById('commandList');
+            const items = commandList.querySelectorAll('.draggable-item');
+            const updates = {};
+
+            items.forEach((item, index) => {
+                const id = item.dataset.id;
+                updates[`commands/${id}/order`] = index;
+            });
+
+            update(ref(db), updates)
+                .then(() => {
+                    alert('Order updated successfully');
+                    fetchCommands(); // Refresh the list to show the updated order
+                })
+                .catch((error) => {
+                    alert('Error updating order: ' + error.message);
+                    console.error('Error updating order:', error);
+                });
+        }
+
+        window.deleteCommand = function (id) {
+            const commandRef = ref(db, `commands/${id}`);
+            remove(commandRef)
+                .then(() => {
+                    fetchCommands();
+                })
+                .catch((error) => {
+                    console.error('Error deleting command:', error);
+                });
+        }
+
+        function moveCar() {
+            const commandQuery = query(ref(db, 'commands'), orderByChild('order'));
+            onValue(commandQuery, (snapshot) => {
+                const data = snapshot.val();
+                const commandsArray = [];
+                for (const key in data) {
+                    commandsArray.push({
+                        command: data[key].command,
+                        order: data[key].order
+                    });
+                }
+
+                commandsArray.sort((a, b) => a.order - b.order); // Ensure correct order
+
+                let delay = 0;
+                commandsArray.forEach((item) => {
+                    setTimeout(() => {
+                        moveCarByCommand(item.command);
+                    }, delay);
+                    delay += 1000; // Adjust timing as needed
+                });
+            });
+        }
+
+        function moveCarByCommand(command) {
+            const car = document.getElementById('car');
+
+            switch (command) {
+                case 'forward':
+                    carPosition.top = Math.max(carPosition.top - stepSize, 0);
+                    break;
+                case 'reverse':
+                    carPosition.top = Math.min(carPosition.top + stepSize, containerSize - carSize);
+                    break;
+                case 'forward right':
+                    carPosition.top = Math.max(carPosition.top - stepSize, 0);
+                    carPosition.left = Math.min(carPosition.left + stepSize, containerSize - carSize);
+                    break;
+                case 'forward left':
+                    carPosition.top = Math.max(carPosition.top - stepSize, 0);
+                    carPosition.left = Math.max(carPosition.left - stepSize, 0);
+                    break;
+                case 'back right':
+                    carPosition.top = Math.min(carPosition.top + stepSize, containerSize - carSize);
+                    carPosition.left = Math.min(carPosition.left + stepSize, containerSize - carSize);
+                    break;
+                case 'back left':
+                    carPosition.top = Math.min(carPosition.top + stepSize, containerSize - carSize);
+                    carPosition.left = Math.max(carPosition.left - stepSize, 0);
+                    break;
+                case 'light on':
+                    car.style.backgroundColor = 'yellow';
+                    setTimeout(() => car.style.backgroundColor = 'blue', 1000);
+                    break;
+            }
+
+            // Update the car's position
+            document.getElementById('car').style.top = `${carPosition.top}px`;
+            document.getElementById('car').style.left = `${carPosition.left}px`;
+        }
+
+        document.getElementById('runBtn').addEventListener('click', moveCar);
+        document.getElementById('updateBtn').addEventListener('click', updateOrder);
+
+        // Initialize with commands
+        fetchCommands();
+    </script>
+
+</body>
+</html>
