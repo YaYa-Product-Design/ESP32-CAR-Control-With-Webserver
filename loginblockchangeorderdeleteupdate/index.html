@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="login-container">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-button">Login</button>
+        </div>
+
+        <!-- Logout button visible after login -->
+        <div id="logout-container" style="display:none;">
+            <button id="logout-button">Logout</button>
+        </div>
+
+        <!-- Sidebar and draggable container -->
+        <div id="sidebar" style="display:none;">
+            <button class="action-button" data-action="forward">Forward</button>
+            <button class="action-button" data-action="reverse">Reverse</button>
+            <button class="action-button" data-action="forward right">Forward Right</button>
+            <button class="action-button" data-action="forward left">Forward Left</button>
+            <button class="action-button" data-action="back left">Back Left</button>
+            <button class="action-button" data-action="back right">Back Right</button>
+            <button class="action-button" data-action="light on">Light On</button>
+        </div>
+
+        <!-- Draggable container -->
+        <div id="draggable-container" style="display:none;">
+            <div id="nodes-container"></div>
+            <button id="update-order-button">Update Order</button>
+        </div>
+    </div>
+
+    <script src="functions.js" type="module"></script>
+    <script src="index.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container Styles */
+#login-container, #logout-container, #sidebar, #nodes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Login and Logout Containers */
+#login-container, #logout-container {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Buttons */
+button {
+    background-color: #ff9800; /* Bright orange for appeal */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #fb8c00; /* Slightly darker orange on hover */
+}
+
+.delete-button {
+    background-color: #f44336; /* Red for delete button */
+    margin-left: 10px;
+}
+
+.delete-button:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
+
+/* Sidebar */
+#sidebar {
+    background-color: #ffeb3b; /* Bright yellow for sidebar */
+    width: 100%;
+    padding: 10px;
+}
+
+#sidebar .action-button {
+    background-color: #4caf50; /* Green for action buttons */
+    padding: 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#sidebar .action-button:hover {
+    background-color: #388e3c; /* Darker green on hover */
+}
+
+/* Draggable Nodes */
+.draggable-node {
+    background-color: #ffffff; /* White background for nodes */
+    border: 2px solid #cccccc; /* Light gray border */
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.draggable-node:hover {
+    background-color: #f1f1f1; /* Light gray background on hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.drag-over {
+    border-color: #ff5722; /* Highlight border color during drag over */
+}
+
+/* Empty State */
+#nodes-container p {
+    color: #666;
+    font-size: 18px;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
