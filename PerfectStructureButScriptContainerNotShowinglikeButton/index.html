@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocar Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400&display=swap" rel="stylesheet"> <!-- Apple-like font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- FontAwesome CSS -->
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            height: 100vh; /* Full height for the body */
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff; /* Optional: Add background color to header */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow to header */
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align user name and icon to the right */
+        }
+        .header-content h1 {
+            font-size: 1.5em;
+            color: #333;
+            margin-right: 10px; /* Add spacing between user name and icon */
+        }
+        .header-content .person-icon {
+            width: 30px;
+            height: 30px;
+            background-image: url('path_to_person_icon.png'); /* Replace with your icon path */
+            background-size: cover;
+        }
+        .logout-button {
+            padding: 8px 15px;
+            background-color: transparent;
+            color: #dc3545; /* Bootstrap danger color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .logout-button:hover {
+            color: #c82333; /* Darker red on hover */
+        }
+        .logout-button i {
+            font-size: 1.2em;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px); /* Full height minus header height */
+            margin-top: 0; /* Remove margin-top */
+        }
+        .column {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: auto; /* Enable scrolling if content exceeds height */
+        }
+        #level-container, #code-block-container {
+            width: 20%; /* Set width for level and code block containers */
+        }
+        #script-container {
+            width: 60%; /* Set width for script container */
+        }
+        .level-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .level-container h3 {
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e0e0e0; /* Light gray background for level headers */
+            border-radius: 5px;
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            width: 100%; /* Full width for level header */
+        }
+        .level-container h3:hover {
+            background-color: #d0d0d0; /* Darker gray on hover */
+        }
+        .exercise-details {
+            margin-left: 20px;
+            display: none; /* Initially hidden */
+        }
+        .exercise-details h4 {
+            margin: 5px 0;
+            color: #555; /* Darker color for exercise titles */
+        }
+        .exercise-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s; /* Add transition for button effects */
+            display: block; /* Make buttons block-level for full-width */
+            width: calc(100% - 20px); /* Full width minus padding */
+            text-align: center; /* Center text inside the button */
+        }
+        .exercise-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+        .action-buttons button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s; /* Add transition for button effects */
+            display: block; /* Make buttons block-level for full-width */
+            width: calc(100% - 20px); /* Full width minus padding */
+            text-align: center; /* Center text inside the button */
+        }
+        .action-buttons button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 id="username">Username</h1>
+            <div class="person-icon"></div>
+        </div>
+        <button class="logout-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </header>
+    <div class="container">
+        <!-- Column for level selection -->
+        <div id="level-container" class="column level-container">
+            <h3>Level 1</h3>
+            <div class="exercise-details">
+                <h4>Exercise 1</h4>
+                <button class="exercise-button" onclick="selectExercise(1, 1)">Select</button>
+                <h4>Exercise 2</h4>
+                <button class="exercise-button" onclick="selectExercise(1, 2)">Select</button>
+            </div>
+            <h3>Level 2</h3>
+            <div class="exercise-details">
+                <h4>Exercise 1</h4>
+                <button class="exercise-button" onclick="selectExercise(2, 1)">Select</button>
+                <h4>Exercise 2</h4>
+                <button class="exercise-button" onclick="selectExercise(2, 2)">Select</button>
+            </div>
+        </div>
+        <div id="code-block-container" class="column"></div>
+        <!-- Column for code block and script -->
+        <div id="script-container" class="column"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-vHtpum7WrQhZEfEBTfqXCyNXr7hUCOo",
+            authDomain: "appfor-c2ff8.firebaseapp.com",
+            databaseURL: "https://appfor-c2ff8-default-rtdb.firebaseio.com",
+            projectId: "appfor-c2ff8",
+            storageBucket: "appfor-c2ff8.appspot.com",
+            messagingSenderId: "545004458407",
+            appId: "1:545004458407:web:55ca4f2b953910c8312682"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Global variables
+        let currentLevel = null;
+        let currentExercise = null;
+
+        // Function to fetch and display data from Firebase
+        function loadCommandsFromFirebase() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (!loggedInUser || currentLevel === null || currentExercise === null) {
+                alert('Please select a level and exercise first');
+                return;
+            }
+
+            const scriptContainer = document.getElementById('script-container');
+            scriptContainer.innerHTML = ''; // Clear previous content
+
+            const commandRef = ref(database, `users/${loggedInUser}/level${currentLevel}/exercise${currentExercise}`);
+
+            onValue(commandRef, (snapshot) => {
+                scriptContainer.innerHTML = ''; // Clear before displaying new data
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const commandData = childSnapshot.val();
+                        const commandElement = document.createElement('p');
+                        commandElement.textContent = `Command: ${commandData.command} - Timestamp: ${new Date(commandData.timestamp).toLocaleString()}`;
+                        scriptContainer.appendChild(commandElement);
+                    });
+                } else {
+                    scriptContainer.textContent = 'No commands stored yet.';
+                }
+            });
+        }
+
+        // Function to handle exercise selection
+        window.selectExercise = function(level, exerciseNumber) {
+            currentLevel = level;
+            currentExercise = exerciseNumber;
+            loadExercise(level, exerciseNumber);
+        };
+
+        // Function to load exercise buttons and commands
+        window.loadExercise = function(level, exerciseNumber) {
+            const codeBlockContainer = document.getElementById('code-block-container');
+            codeBlockContainer.innerHTML = ''; // Clear previous buttons
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('action-buttons');
+
+            if (level === 1) {
+                if (exerciseNumber === 1) {
+                    buttonContainer.innerHTML = `
+                        <button onclick="window.sendCommand('Forward')">Forward</button>
+                        <button onclick="window.sendCommand('Back')">Back</button>
+                        <button onclick="window.sendCommand('Left')">Left</button>
+                        <button onclick="window.sendCommand('Right')">Right</button>
+                    `;
+                } else if (exerciseNumber === 2) {
+                    buttonContainer.innerHTML = `
+                        <button onclick="window.sendCommand('Forward')">Forward</button>
+                        <button onclick="window.sendCommand('Back')">Back</button>
+                        <button onclick="window.sendCommand('Left')">Left</button>
+                        <button onclick="window.sendCommand('Right')">Right</button>
+                        <button onclick="window.sendCommand('Forward Right')">Forward Right</button>
+                        <button onclick="window.sendCommand('Forward Left')">Forward Left</button>
+                    `;
+                }
+            } else if (level === 2) {
+                if (exerciseNumber === 1) {
+                    buttonContainer.innerHTML = `
+                        <button onclick="window.sendCommand('Jump')">Jump</button>
+                        <button onclick="window.sendCommand('Crouch')">Crouch</button>
+                        <button onclick="window.sendCommand('Sprint')">Sprint</button>
+                    `;
+                } else if (exerciseNumber === 2) {
+                    buttonContainer.innerHTML = `
+                        <button onclick="window.sendCommand('Duck')">Duck</button>
+                        <button onclick="window.sendCommand('Dive')">Dive</button>
+                        <button onclick="window.sendCommand('Roll')">Roll</button>
+                        <button onclick="window.sendCommand('Climb')">Climb</button>
+                    `;
+                }
+            }
+
+            codeBlockContainer.appendChild(buttonContainer);
+            loadCommandsFromFirebase(); // Display commands when exercise is selected
+        };
+
+        // Function to send commands to Firebase
+        window.sendCommand = function(command) {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (!loggedInUser || currentLevel === null || currentExercise === null) {
+                alert('Please select a level and exercise first');
+                return;
+            }
+
+            const commandRef = ref(database, `users/${loggedInUser}/level${currentLevel}/exercise${currentExercise}`);
+            push(commandRef, {
+                command: command,
+                timestamp: Date.now()
+            });
+
+            alert(`Command "${command}" sent!`);
+        };
+
+        // Function to display the logged-in username
+        function displayUsername() {
+            const usernameElement = document.getElementById('username');
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            usernameElement.textContent = loggedInUser || 'User not found';
+        }
+
+        // Call displayUsername on page load
+        displayUsername();
+
+        // Event listener for level selection
+        document.querySelectorAll('.level-container h3').forEach(levelHeader => {
+            levelHeader.addEventListener('click', () => {
+                const details = levelHeader.nextElementSibling;
+                if (details.style.display === 'block') {
+                    details.style.display = 'none';
+                } else {
+                    document.querySelectorAll('.exercise-details').forEach(detail => detail.style.display = 'none');
+                    details.style.display = 'block';
+                }
+            });
+        });
+
+        // Event listener for logout
+        document.querySelector('.logout-button').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'login.html'; // Redirect to login page
+        });
+    </script>
+</body>
+</html>
