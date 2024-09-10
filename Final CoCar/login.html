@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .message.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+
+        <!-- Login Form -->
+        <div class="form-group">
+            <label for="login-username">Username:</label>
+            <input type="text" id="login-username" placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" placeholder="Enter password">
+        </div>
+
+        <button id="login-button">Login</button>
+
+        <!-- Message Display -->
+        <div id="login-message" class="message"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-vHtpum7WrQhZEfEBTfqXCyNXr7hUCOo",
+            authDomain: "appfor-c2ff8.firebaseapp.com",
+            databaseURL: "https://appfor-c2ff8-default-rtdb.firebaseio.com",
+            projectId: "appfor-c2ff8",
+            storageBucket: "appfor-c2ff8.appspot.com",
+            messagingSenderId: "545004458407",
+            appId: "1:545004458407:web:55ca4f2b953910c8312682"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Function to handle user login
+        async function loginUser() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const messageElement = document.getElementById('login-message');
+
+            if (username && password) {
+                try {
+                    const dbRef = ref(database);
+                    const snapshot = await get(child(dbRef, `users`));
+                    if (snapshot.exists()) {
+                        const users = snapshot.val();
+                        let userFound = false;
+                        for (const key in users) {
+                            if (users[key].username === username && users[key].password === password) {
+                                userFound = true;
+                                break;
+                            }
+                        }
+
+                        if (userFound) {
+                            // Save username to localStorage
+                            localStorage.setItem('loggedInUser', username);
+                            // Redirect to index.html
+                            window.location.href = 'index.html';
+                        } else {
+                            messageElement.textContent = 'Invalid username or password';
+                            messageElement.className = 'message error';
+                        }
+                    } else {
+                        messageElement.textContent = 'No users found';
+                        messageElement.className = 'message error';
+                    }
+                } catch (error) {
+                    messageElement.textContent = 'Error: ' + error.message;
+                    messageElement.className = 'message error';
+                }
+            } else {
+                messageElement.textContent = 'Please enter both username and password';
+                messageElement.className = 'message error';
+            }
+        }
+
+        // Attach event listener to the login button
+        document.getElementById('login-button').addEventListener('click', loginUser);
+    </script>
+</body>
+</html>

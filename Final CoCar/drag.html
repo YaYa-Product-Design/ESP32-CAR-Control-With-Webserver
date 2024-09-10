@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggable List with Delete Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .sortable-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .item {
+            background-color: #f1f1f1;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .details {
+            flex-grow: 1;
+        }
+
+        .delete-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #ff4c4c;
+        }
+    </style>
+</head>
+<body>
+
+    <ul class="sortable-list">
+        <li class="item" draggable="true">
+            <div class="details">
+                <span>Item 1</span>
+            </div>
+            <button class="delete-btn">&#10006;</button>
+        </li>
+        <li class="item" draggable="true">
+            <div class="details">
+                <span>Item 2</span>
+            </div>
+            <button class="delete-btn">&#10006;</button>
+        </li>
+        <li class="item" draggable="true">
+            <div class="details">
+                <span>Item 3</span>
+            </div>
+            <button class="delete-btn">&#10006;</button>
+        </li>
+        <li class="item" draggable="true">
+            <div class="details">
+                <span>Item 4</span>
+            </div>
+            <button class="delete-btn">&#10006;</button>
+        </li>
+        <li class="item" draggable="true">
+            <div class="details">
+                <span>Item 5</span>
+            </div>
+            <button class="delete-btn">&#10006;</button>
+        </li>
+    </ul>
+
+    <script>
+        const items = document.querySelectorAll('.item');
+        const deleteBtns = document.querySelectorAll('.delete-btn');
+
+        let draggedItem = null;
+
+        items.forEach(item => {
+            item.addEventListener('dragstart', dragStart);
+            item.addEventListener('dragover', dragOver);
+            item.addEventListener('drop', drop);
+        });
+
+        deleteBtns.forEach(btn => {
+            btn.addEventListener('click', deleteItem);
+        });
+
+        function dragStart() {
+            draggedItem = this;
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop() {
+            if (this !== draggedItem) {
+                // Insert the dragged item before the current item
+                this.parentNode.insertBefore(draggedItem, this);
+            }
+        }
+
+        function deleteItem() {
+            const item = this.closest('.item');
+            item.remove();
+        }
+    </script>
+
+</body>
+</html>

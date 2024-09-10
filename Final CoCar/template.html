@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocar Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400&display=swap" rel="stylesheet"> <!-- Apple-like font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- FontAwesome CSS -->
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            height: 100vh; /* Full height for the body */
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff; /* Optional: Add background color to header */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow to header */
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align user name and icon to the right */
+        }
+        .header-content h1 {
+            font-size: 1.5em;
+            color: #333;
+            margin-right: 10px; /* Add spacing between user name and icon */
+        }
+        .header-content .person-icon {
+            width: 30px;
+            height: 30px;
+            background-image: url('path_to_person_icon.png'); /* Replace with your icon path */
+            background-size: cover;
+        }
+        .logout-button {
+            padding: 8px 15px;
+            background-color: transparent;
+            color: #dc3545; /* Bootstrap danger color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .logout-button:hover {
+            color: #c82333; /* Darker red on hover */
+        }
+        .logout-button i {
+            font-size: 1.2em;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px); /* Full height minus header height */
+            margin-top: 0; /* Remove margin-top */
+        }
+        .column {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: auto; /* Enable scrolling if content exceeds height */
+        }
+        #level-container, #code-block-container {
+            width: 20%; /* Set width for level and code block containers */
+        }
+        #script-container {
+            width: 60%; /* Set width for script container */
+        }
+        .level-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .level-container h3 {
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e0e0e0; /* Light gray background for level headers */
+            border-radius: 5px;
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            width: 100%; /* Full width for level header */
+        }
+        .level-container h3:hover {
+            background-color: #d0d0d0; /* Darker gray on hover */
+        }
+        .exercise-details {
+            margin-left: 20px;
+            display: none; /* Initially hidden */
+        }
+        .exercise-details h4 {
+            margin: 5px 0;
+            color: #555; /* Darker color for exercise titles */
+        }
+        .exercise-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .exercise-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Cocar</h1>
+    <div class="header-content">
+        <h1>User Name</h1>
+        <div class="person-icon"></div>
+        <button class="logout-button"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="column" id="level-container">
+        <h2>Level Container</h2>
+        <div class="level-container">
+            <h3 onclick="toggleExerciseDetails(this)">Level 1</h3>
+            <div class="exercise-details">
+                <h4>Exercise 1</h4>
+                <p>Details about Exercise 1...</p>
+                <button class="exercise-button" onclick="renderContent('exercise1')">Start Exercise 1</button>
+                
+                <h4>Exercise 2</h4>
+                <p>Details about Exercise 2...</p>
+                <button class="exercise-button" onclick="renderContent('exercise2')">Start Exercise 2</button>
+                
+                <h4>Exercise 3</h4>
+                <p>Details about Exercise 3...</p>
+                <button class="exercise-button" onclick="renderContent('exercise3')">Start Exercise 3</button>
+                
+                <h4>Exercise 4</h4>
+                <p>Details about Exercise 4...</p>
+                <button class="exercise-button" onclick="renderContent('exercise4')">Start Exercise 4</button>
+                
+                <h4>Exercise 5</h4>
+                <p>Details about Exercise 5...</p>
+                <button class="exercise-button" onclick="renderContent('exercise5')">Start Exercise 5</button>
+            </div>
+        </div>
+        <!-- Add more levels if needed -->
+    </div>
+    
+    <div class="column" id="code-block-container">
+        <h2>Code Block Container</h2>
+        <pre id="codeBlock"><code>
+        // Sample code block will be rendered here
+        </code></pre>
+    </div>
+    
+    <div class="column" id="script-container">
+        <h2>Script Container</h2>
+        <div id="scriptContent">
+            <!-- Script content will be rendered here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleExerciseDetails(element) {
+        var exerciseDetails = element.nextElementSibling;
+        if (exerciseDetails.style.display === "none" || exerciseDetails.style.display === "") {
+            exerciseDetails.style.display = "block";
+        } else {
+            exerciseDetails.style.display = "none";
+        }
+    }
+
+    function renderContent(exercise) {
+        const codeBlock = document.getElementById('codeBlock');
+        const scriptContent = document.getElementById('scriptContent');
+
+        switch (exercise) {
+            case 'exercise1':
+                codeBlock.innerHTML = `// Code for Exercise 1\nconsole.log("Exercise 1 running...");`;
+                scriptContent.innerHTML = '<p>This is the script content for Exercise 1.</p>';
+                break;
+            case 'exercise2':
+                codeBlock.innerHTML = `// Code for Exercise 2\nconsole.log("Exercise 2 running...");`;
+                scriptContent.innerHTML = '<p>This is the script content for Exercise 2.</p>';
+                break;
+            case 'exercise3':
+                codeBlock.innerHTML = `// Code for Exercise 3\nconsole.log("Exercise 3 running...");`;
+                scriptContent.innerHTML = '<p>This is the script content for Exercise 3.</p>';
+                break;
+            case 'exercise4':
+                codeBlock.innerHTML = `// Code for Exercise 4\nconsole.log("Exercise 4 running...");`;
+                scriptContent.innerHTML = '<p>This is the script content for Exercise 4.</p>';
+                break;
+            case 'exercise5':
+                codeBlock.innerHTML = `// Code for Exercise 5\nconsole.log("Exercise 5 running...");`;
+                scriptContent.innerHTML = '<p>This is the script content for Exercise 5.</p>';
+                break;
+            default:
+                codeBlock.innerHTML = '// Sample code block will be rendered here';
+                scriptContent.innerHTML = '';
+                break;
+        }
+    }
+</script>
+
+</body>
+</html>

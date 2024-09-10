@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocar Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            height: 100vh;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .header-content h1 {
+            font-size: 1.5em;
+            color: #333;
+            margin-right: 10px;
+        }
+        .header-content .person-icon {
+            width: 30px;
+            height: 30px;
+            background-image: url('path_to_person_icon.png');
+            background-size: cover;
+        }
+        .logout-button {
+            padding: 8px 15px;
+            background-color: transparent;
+            color: #dc3545;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .logout-button:hover {
+            color: #c82333;
+        }
+        .logout-button i {
+            font-size: 1.2em;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+            margin-top: 0;
+        }
+        .column {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+        }
+        #level-container, #code-block-container {
+            width: 20%;
+        }
+        #script-container {
+            width: 60%;
+        }
+        .level-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .level-container h3 {
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        .level-container h3:hover {
+            background-color: #d0d0d0;
+        }
+        .exercise-details {
+            margin-left: 20px;
+            display: none;
+        }
+        .exercise-details h4 {
+            margin: 5px 0;
+            color: #555;
+        }
+        .exercise-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            display: block;
+            width: calc(100% - 20px);
+            text-align: center;
+        }
+        .exercise-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .action-buttons button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            display: block;
+            width: calc(100% - 20px);
+            text-align: center;
+        }
+        .action-buttons button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    .command-item {
+    position: relative; /* Add positioning to allow absolute positioning of elements inside */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: move;
+    user-select: none;
+    width: 300px;
+}
+
+/* .command-item .delete-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+} */
+
+        .dragging {
+            opacity: 0.5;
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 id="username">Username</h1>
+            <div class="person-icon"></div>
+        </div>
+        <button class="logout-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </header>
+    <div class="container">
+        <div id="level-container" class="column level-container">
+            <h3>Level 1</h3>
+            <div class="exercise-details">
+                <h4>Exercise 1</h4>
+                <button class="exercise-button" data-level="1" data-exercise="1">Select</button>
+                <h4>Exercise 2</h4>
+                <button class="exercise-button" data-level="1" data-exercise="2">Select</button>
+            </div>
+            <h3>Level 2</h3>
+            <div class="exercise-details">
+                <h4>Exercise 1</h4>
+                <button class="exercise-button" data-level="2" data-exercise="1">Select</button>
+                <h4>Exercise 2</h4>
+                <button class="exercise-button" data-level="2" data-exercise="2">Select</button>
+            </div>
+        </div>
+        <div id="code-block-container" class="column"></div>
+        <div id="script-container" class="column"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+    
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-vHtpum7WrQhZEfEBTfqXCyNXr7hUCOo",
+            authDomain: "appfor-c2ff8.firebaseapp.com",
+            databaseURL: "https://appfor-c2ff8-default-rtdb.firebaseio.com",
+            projectId: "appfor-c2ff8",
+            storageBucket: "appfor-c2ff8.appspot.com",
+            messagingSenderId: "545004458407",
+            appId: "1:545004458407:web:55ca4f2b953910c8312682"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+    
+        // Global variables
+        let currentLevel = null;
+        let currentExercise = null;
+        let draggedElement = null;
+    
+        // Function to handle exercise selection
+        window.selectExercise = function (level, exerciseNumber) {
+            currentLevel = level;
+            currentExercise = exerciseNumber;
+            loadExercise(level, exerciseNumber);
+        };
+    
+        // Function to load exercise buttons and commands
+        window.loadExercise = function (level, exerciseNumber) {
+            const codeBlockContainer = document.getElementById('code-block-container');
+            codeBlockContainer.innerHTML = ''; // Clear previous buttons
+    
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('action-buttons');
+    
+            const buttonsByExercise = {
+                1: ['Forward', 'Back', 'Left', 'Right'],
+                2: ['Forward', 'Back', 'Left', 'Right', 'Forward Right', 'Forward Left'],
+                3: ['Jump', 'Crouch', 'Sprint'],
+                4: ['Duck', 'Dive', 'Roll', 'Climb']
+            };
+    
+            buttonsByExercise[exerciseNumber].forEach(action => {
+                const button = document.createElement('button');
+                button.textContent = action;
+                button.onclick = () => sendCommand(action);
+                buttonContainer.appendChild(button);
+            });
+    
+            codeBlockContainer.appendChild(buttonContainer);
+            loadCommandsFromFirebase();
+        };
+    
+        // Function to send commands to Firebase
+        window.sendCommand = function (command) {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (!loggedInUser || currentLevel === null || currentExercise === null) {
+                alert('Please select a level and exercise first');
+                return;
+            }
+    
+            const commandRef = ref(database, `users/${loggedInUser}/level${currentLevel}/exercise${currentExercise}`);
+            push(commandRef, {
+                command: command,
+                timestamp: Date.now()
+            }).then(() => {
+                alert(`Command "${command}" sent!`);
+            }).catch(error => {
+                alert('Error sending command: ' + error.message);
+            });
+        };
+    
+        // Function to load commands from Firebase
+        // Function to load commands from Firebase
+function loadCommandsFromFirebase() {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (!loggedInUser || currentLevel === null || currentExercise === null) {
+        return;
+    }
+
+    const commandsRef = ref(database, `users/${loggedInUser}/level${currentLevel}/exercise${currentExercise}`);
+    onValue(commandsRef, (snapshot) => {
+        const scriptContainer = document.getElementById('script-container');
+        scriptContainer.innerHTML = ''; // Clear previous commands
+
+        const commands = snapshot.val();
+        if (commands) {
+            // Convert commands object into an array and sort by 'order'
+            const sortedCommands = Object.keys(commands)
+                .map(key => ({ ...commands[key], key })) // Add key to each command
+                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); // Sort by 'order'
+
+            sortedCommands.forEach(command => {
+                const commandElement = document.createElement('div');
+                commandElement.classList.add('command-item');
+                commandElement.draggable = true;
+                commandElement.dataset.commandKey = command.key;
+                commandElement.style.backgroundColor = '#f4f4f4';
+
+                const commandText = document.createElement('span');
+                commandText.textContent = command.command;
+                commandText.style.color = '#333';
+                commandElement.appendChild(commandText);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.style.marginLeft = '10px';
+                deleteButton.addEventListener('click', () => {
+                    remove(ref(database, `users/${loggedInUser}/level${currentLevel}/exercise${currentExercise}/${command.key}`));
+                });
+                commandElement.appendChild(deleteButton);
+
+                commandElement.addEventListener('dragstart', handleDragStart);
+                commandElement.addEventListener('dragend', handleDragEnd);
+                scriptContainer.appendChild(commandElement);
+            });
+        }
+    });
+}
+
+        // Drag start event
+// Drag start event
+function handleDragStart(event) {
+    draggedElement = event.target.closest('.command-item');
+    event.dataTransfer.setData('text/plain', ''); // Required for Firefox
+    setTimeout(() => {
+        if (draggedElement) {
+            draggedElement.classList.add('dragging');
+        }
+    }, 0);
+}
+
+
+    
+        // Drag end event
+// Drag end event
+function handleDragEnd() {
+    if (draggedElement) {
+        setTimeout(() => {
+            draggedElement.classList.remove('dragging');
+            draggedElement = null;
+        }, 0);
+    }
+}
+
+    
+        // Drag over event
+function handleDragOver(event) {
+    event.preventDefault(); // Necessary to allow dropping
+}
+     // Drop event
+// Drop event
+function handleDrop(event) {
+    event.preventDefault();
+
+    if (draggedElement && event.target.closest('.command-item') && draggedElement !== event.target) {
+        const scriptContainer = document.getElementById('script-container');
+        const target = event.target.closest('.command-item');
+
+        if (target) {
+            const bounding = target.getBoundingClientRect();
+            const offset = event.clientY - bounding.top;
+            const targetHeight = bounding.height;
+
+            if (offset < targetHeight / 2) {
+                // Insert before the target
+                scriptContainer.insertBefore(draggedElement, target);
+            } else {
+                // Insert after the target
+                scriptContainer.insertBefore(draggedElement, target.nextSibling);
+            }
+
+            updateCommandOrder();
+        }
+    }
+
+    if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement = null;
+    }
+}
+
+
+
+// Update command order in Firebase
+function updateCommandOrder() {
+    const commands = Array.from(document.querySelectorAll('#script-container .command-item'));
+    const updates = {};
+
+    commands.forEach((command, index) => {
+        const commandKey = command.dataset.commandKey;
+        updates[`/${commandKey}/order`] = index;
+    });
+
+    const commandsRef = ref(database, `users/${localStorage.getItem('loggedInUser')}/level${currentLevel}/exercise${currentExercise}`);
+    update(commandsRef, updates)
+        .then(() => {
+            console.log('Command order updated successfully.');
+        })
+        .catch(error => {
+            console.error('Error updating command order:', error.message);
+        });
+}
+
+    
+        // Function to display the logged-in username
+        function displayUsername() {
+            const usernameElement = document.getElementById('username');
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            usernameElement.textContent = loggedInUser || 'User not found';
+        }
+    
+        // Call displayUsername on page load
+        displayUsername();
+    
+        // Add event listeners for level headers
+        document.querySelectorAll('#level-container h3').forEach(header => {
+            header.addEventListener('click', () => {
+                const details = header.nextElementSibling;
+                details.style.display = details.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    
+        // Add event listeners for exercise buttons
+        document.querySelectorAll('.exercise-button').forEach(button => {
+            button.addEventListener('click', () => {
+                selectExercise(parseInt(button.getAttribute('data-level')), parseInt(button.getAttribute('data-exercise')));
+            });
+        });
+    
+        // Add event listeners for logout
+        document.querySelector('.logout-button').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'login.html'; // Redirect to login page
+        });
+    
+        // Add dragover and drop event listeners to the container
+        const scriptContainer = document.getElementById('script-container');
+        scriptContainer.addEventListener('dragover', handleDragOver);
+        scriptContainer.addEventListener('drop', handleDrop);
+    </script>
+      
+    
+</body>
+</html>
